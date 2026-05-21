@@ -16,7 +16,7 @@
   "TRAMP integration for Incus."
   :group 'tramp)
 
-(defcustom incus-tramp-incus-executable "incus"
+(defcustom incus-tramp-incus-program "incus"
   "Path to the Incus executable."
   :type 'string
   :group 'incus-tramp)
@@ -25,18 +25,11 @@
 (defconst incus-tramp-method "incus"
   "Tramp method name to connect to Incus containers.")
 
-;;;###autoload
-(defun incus-tramp--completion-function ()
-  "List running containers available for connection.
-
-This function is used by `tramp-set-completion-function', please
-see its function help for a description of the format."
-  (interactive)
-  (tramp-skeleton-completion-function incus-tramp-method
-    (when-let* ((raw-list
-		         (shell-command-to-string
-		          (concat program " list --columns=n --format=csv status=running")))
-		        (names (split-string raw-list "\n" 'omit)))
+(defun tramp-incus-completion-function (method)
+  (tramp-skeleton-completion-function method
+    (when-let* ((raw-list (shell-command-to-string
+                           (concat program " list status=running --columns=n --format=csv")))
+                (names (split-string raw-list "\n" 'omit)))
       (mapcar (lambda (name) (list nil name)) names))))
 
 ;;;###autoload
@@ -45,16 +38,16 @@ see its function help for a description of the format."
   (with-eval-after-load 'tramp
     (add-to-list 'tramp-methods
                  `(,incus-tramp-method
-                   (tramp-login-program ,incus-tramp-incus-executable)
-                   (tramp-login-args (("exec") ("%h") ("--") ("%l")))
+                   (tramp-login-program ,incus-tramp-incus-program)
+                   (tramp-login-args (("exec") ("%h") (,(format "--env TERM=%s" tramp-terminal-type)) ("--") ("%l")))
                    (tramp-direct-async (,tramp-default-remote-shell "-c"))
                    (tramp-remote-shell ,tramp-default-remote-shell)
                    (tramp-remote-shell-login ("-l"))
                    (tramp-remote-shell-args ("-i" "-c"))
-                   (tramp-completion-use-cache nil)))
-    
-    (tramp-set-completion-function tramp-docker-method
-                                   (incus-tramp--completion-function))
+                   (tramp-completion-use-cache nil)
+                   (tramp-connection-timeout 60)))
+    (tramp-set-completion-function incus-tramp-method
+                                   `((tramp-incus-completion-function ,incus-tramp-method)))
     (add-to-list 'tramp-completion-multi-hop-methods incus-tramp-method)))
 
 (provide 'incus-tramp)
