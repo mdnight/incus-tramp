@@ -66,7 +66,6 @@
 
 ;;;###autoload
 (defun incus-tramp-enable-method ()
-  (interactive)
   (with-eval-after-load 'tramp
     (add-to-list 'tramp-methods
                  `(,incus-tramp-method
