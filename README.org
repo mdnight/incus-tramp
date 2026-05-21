@@ -1,0 +1,36 @@
+* incus-tramp - TRAMP integration for Incus containers
+
+=incus-tramp= is a simple intermediary layer which implements communication
+logic between =TRAMP= and the =incus= CLI in order to access containers
+similarly to how it is implemented for Docker, Podman, and other programs.
+
+** Key features:
+- Connection to running Incus containers via the standard TRAMP interface.
+- Access/editing of files within containers, as well as copying/moving files
+  to/from containers.
+- Autocompletion from a list of running containers.
+- Access to containers via multi-hop connections (e.g., =ssh -> ssh -> incus=).
+
+** Configuration
+
+#+begin_src emacs-lisp
+  (use-package incus-tramp :ensure nil :after tramp :vc
+    git@github.com:mdnight/incus-tramp.git :config (incus-tramp-enable-method))
+#+end_src
+
+** Usage
+
+This package implements the TRAMP method =incus= to access running containers:
+
+#+begin_example
+
+C-x C-f /incus:container:/path/to/file
+
+where
+  container       is the name of the container. Names are normally equal to
+                  names in the output of the command "incus list --columns=n".
+
+#+end_example
+
+
+This package was inspired by the original [[https://gitlab.com/lckarssen/incus-tramp][incus-tramp]] package created by [[https://gitlab.com/lckarssen][Lennart C. Karssen]]
