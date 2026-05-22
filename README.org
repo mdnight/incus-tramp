@@ -14,11 +14,13 @@ similarly to how it is implemented for Docker, Podman, and other programs.
 ** Configuration
 
 #+begin_src emacs-lisp
-        (use-package incus-tramp
-          :ensure t
-          :after tramp :vc (incus-tramp :url https://github.com/mdnight/incus-tramp.git
-                                        :branch main)
-          :config (incus-tramp-enable-method))
+  (use-package incus-tramp
+    :ensure nil
+    :after tramp
+    :vc (incus-tramp :url "https://github.com/mdnight/incus-tramp.git"
+                     :rev "v0.1.0")
+    :config
+    (incus-tramp-enable-method))
 #+end_src
 
 ** Usage
