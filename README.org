@@ -15,7 +15,6 @@ similarly to how it is implemented for Docker, Podman, and other programs.
 
 #+begin_src emacs-lisp
   (use-package incus-tramp
-    :ensure nil
     :after tramp
     :vc (incus-tramp :url "https://github.com/mdnight/incus-tramp.git"
                      :rev "v0.1.0")
